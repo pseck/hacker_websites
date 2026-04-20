@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 Ultimate Hacker Websites</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030a03;
+    --bg2: #060f06;
+    --green: #00ff41;
+    --green-dim: #00c832;
+    --green-dark: #004d14;
+    --green-glow: rgba(0,255,65,0.15);
+    --amber: #ffb000;
+    --red: #ff3131;
+    --cyan: #00e5ff;
+    --text: #b0ffb8;
+    --text-dim: #5a8c60;
+    --border: #1a3d1a;
+    --card-bg: rgba(0,15,0,0.85);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* Matrix rain canvas */
+  #matrix-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 60px 20px 40px;
+    position: relative;
+  }
+
+  .header-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    animation: fadeIn 1s ease;
+  }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(28px, 5vw, 64px);
+    font-weight: 900;
+    color: var(--green);
+    text-shadow:
+      0 0 10px var(--green),
+      0 0 30px rgba(0,255,65,0.4),
+      0 0 60px rgba(0,255,65,0.2);
+    letter-spacing: 4px;
+    line-height: 1.1;
+    animation: flicker 6s infinite;
+  }
+
+  .subtitle {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+  }
+
+  .subtitle span {
+    color: var(--amber);
+    text-shadow: 0 0 8px var(--amber);
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    margin: 30px 0;
+    opacity: 0.4;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin: 20px 0 40px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    border-radius: 4px;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 10px var(--green);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Filter tabs */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 30px;
+    justify-content: center;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-glow);
+    text-shadow: 0 0 6px var(--green);
+    box-shadow: 0 0 10px rgba(0,255,65,0.1);
+  }
+
+  /* Search */
+  .search-wrapper {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto 30px;
+  }
+
+  .search-wrapper::before {
+    content: '//SEARCH>';
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--green-dim);
+    font-size: 11px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  #search {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 12px 16px 12px 100px;
+    outline: none;
+    border-radius: 2px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  #search:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 15px rgba(0,255,65,0.1);
+  }
+
+  #search::placeholder { color: var(--text-dim); }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 18px 20px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    animation: cardIn 0.4s ease both;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green);
+    opacity: 0;
+    transition: opacity 0.2s;
+    box-shadow: 0 0 8px var(--green);
+  }
+
+  .card:hover {
+    border-color: rgba(0,255,65,0.4);
+    background: rgba(0,25,0,0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,65,0.05);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+
+  .card-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    min-width: 28px;
+    margin-top: 2px;
+  }
+
+  .card-title-wrap { flex: 1; }
+
+  .card-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 6px rgba(0,255,65,0.3);
+    margin-bottom: 3px;
+    word-break: break-word;
+  }
+
+  .card-url {
+    font-size: 10px;
+    color: var(--cyan);
+    opacity: 0.7;
+    word-break: break-all;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .card-url:hover { opacity: 1; text-decoration: underline; }
+
+  .tag {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: bold;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .tag-pentest  { background: rgba(255,49,49,0.15);  color: var(--red);   border: 1px solid rgba(255,49,49,0.3); }
+  .tag-learn    { background: rgba(0,229,255,0.1);   color: var(--cyan);  border: 1px solid rgba(0,229,255,0.25); }
+  .tag-tools    { background: rgba(255,176,0,0.1);   color: var(--amber); border: 1px solid rgba(255,176,0,0.25); }
+  .tag-ctf      { background: rgba(0,255,65,0.1);    color: var(--green); border: 1px solid rgba(0,255,65,0.25); }
+  .tag-osint    { background: rgba(180,0,255,0.12);  color: #d580ff;      border: 1px solid rgba(180,0,255,0.3); }
+  .tag-malware  { background: rgba(255,49,49,0.08);  color: #ff8080;      border: 1px solid rgba(255,49,49,0.2); }
+  .tag-news     { background: rgba(0,229,255,0.08);  color: #80f0ff;      border: 1px solid rgba(0,229,255,0.2); }
+  .tag-crypto   { background: rgba(255,200,0,0.1);   color: #ffd040;      border: 1px solid rgba(255,200,0,0.25); }
+  .tag-network  { background: rgba(0,255,65,0.08);   color: #80ffb0;      border: 1px solid rgba(0,255,65,0.2); }
+  .tag-privacy  { background: rgba(100,100,255,0.1); color: #a0a0ff;      border: 1px solid rgba(100,100,255,0.25); }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    display: none;
+    grid-column: 1/-1;
+  }
+
+  .no-results h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 30px;
+    font-size: 11px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    letter-spacing: 2px;
+    margin-top: 40px;
+  }
+
+  footer span { color: var(--green); }
+
+  /* Animations */
+  @keyframes flicker {
+    0%,95%,100% { opacity: 1; }
+    96% { opacity: 0.85; }
+    97% { opacity: 1; }
+    98% { opacity: 0.9; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<div class="container">
+  <header>
+    <div class="header-label">// CLASSIFIED RESOURCE DATABASE //</div>
+    <h1>HACKER'S ARSENAL</h1>
+    <p class="subtitle">ULTIMATE COLLECTION &mdash; <span>100 SITES</span> &mdash; CURATED FOR THE ELITE</p>
+  </header>
+
+  <div class="divider"></div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val">100</div><div class="stat-label">Sites</div></div>
+    <div class="stat"><div class="stat-val">10</div><div class="stat-label">Categories</div></div>
+    <div class="stat"><div class="stat-val">FREE</div><div class="stat-label">Access</div></div>
+    <div class="stat"><div class="stat-val">∞</div><div class="stat-label">Knowledge</div></div>
+  </div>
+
+  <div class="search-wrapper">
+    <input type="text" id="search" placeholder="filter resources...">
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="pentest">Pentest</button>
+    <button class="filter-btn" data-filter="learn">Learn</button>
+    <button class="filter-btn" data-filter="tools">Tools</button>
+    <button class="filter-btn" data-filter="ctf">CTF</button>
+    <button class="filter-btn" data-filter="osint">OSINT</button>
+    <button class="filter-btn" data-filter="malware">Malware</button>
+    <button class="filter-btn" data-filter="news">News</button>
+    <button class="filter-btn" data-filter="crypto">Crypto</button>
+    <button class="filter-btn" data-filter="network">Network</button>
+    <button class="filter-btn" data-filter="privacy">Privacy</button>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="no-results" id="no-results">
+      <h3>// NO RESULTS FOUND //</h3>
+      <p>Adjust your search parameters</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>// HACKER'S ARSENAL //</span> &mdash; FOR EDUCATIONAL &amp; ETHICAL USE ONLY &mdash; <span>100 SITES COMPILED</span>
+</footer>
+
+<script>
+const sites = [
+  // PENTEST
+  { n:1,  title:"Hack The Box",         url:"hackthebox.com",          tag:"pentest", desc:"Elite cybersecurity training platform with real-world machines, labs, and pro-level challenges used by penetration testers worldwide." },
+  { n:2,  title:"TryHackMe",            url:"tryhackme.com",           tag:"learn",   desc:"Browser-based cybersecurity learning platform with guided paths and hands-on rooms for beginners through advanced practitioners." },
+  { n:3,  title:"Offensive Security",   url:"offsec.com",              tag:"pentest", desc:"Home of OSCP certification and Kali Linux. Industry gold standard for professional penetration testing training and credentials." },
+  { n:4,  title:"PentesterLab",         url:"pentesterlab.com",        tag:"pentest", desc:"Practical web hacking labs covering SQL injection, XSS, file inclusion, and modern vulnerability classes with badges." },
+  { n:5,  title:"VulnHub",              url:"vulnhub.com",             tag:"ctf",     desc:"Free repository of intentionally vulnerable virtual machines for practicing penetration testing in an offline environment." },
+  { n:6,  title:"PortSwigger Web Academy", url:"portswigger.net/web-security", tag:"pentest", desc:"The definitive free web security training by creators of Burp Suite. Covers every OWASP category with interactive labs." },
+  { n:7,  title:"Exploit-DB",           url:"exploit-db.com",          tag:"tools",   desc:"Offensive Security's archive of public exploits and vulnerable software, plus the Google Hacking Database (GHDB)." },
+  { n:8,  title:"Metasploit",           url:"metasploit.com",          tag:"tools",   desc:"World's most widely used penetration testing framework with thousands of exploits, payloads, and auxiliary modules." },
+  { n:9,  title:"HackerOne",            url:"hackerone.com",           tag:"pentest", desc:"Leading bug bounty and vulnerability disclosure platform connecting ethical hackers with organizations for responsible disclosure." },
+  { n:10, title:"Bugcrowd",             url:"bugcrowd.com",            tag:"pentest", desc:"Crowdsourced security platform offering bug bounty programs across hundreds of companies, with tiered researcher rewards." },
+  // LEARN
+  { n:11, title:"Cybrary",              url:"cybrary.it",              tag:"learn",   desc:"Online cybersecurity career development platform with free and premium courses covering everything from CompTIA to advanced red teaming." },
+  { n:12, title:"SANS Internet Storm Center", url:"isc.sans.edu",      tag:"news",    desc:"Daily security diary and threat intelligence from SANS handlers monitoring global Internet threats 24/7." },
+  { n:13, title:"Hacking Articles",     url:"hackingarticles.in",      tag:"learn",   desc:"Massive repository of detailed hacking tutorials on CTF write-ups, privilege escalation, web exploitation, and more." },
+  { n:14, title:"SecurityTube",         url:"securitytube.net",        tag:"learn",   desc:"Infosec video channel library with free courses, conference talks, and tool demonstrations from security researchers." },
+  { n:15, title:"OpenSecurityTraining", url:"opensecuritytraining.info",tag:"learn",  desc:"Free university-level security courses including malware analysis, architecture exploitation, and vulnerability discovery." },
+  { n:16, title:"Null Byte (WonderHowTo)", url:"null-byte.wonderhowto.com", tag:"learn", desc:"Community-driven tutorials covering ethical hacking, network exploitation, and digital forensics for all skill levels." },
+  { n:17, title:"The Hacker News",      url:"thehackernews.com",       tag:"news",    desc:"Leading cybersecurity news outlet covering data breaches, vulnerabilities, malware, and hacking incidents globally." },
+  { n:18, title:"Krebs on Security",    url:"krebsonsecurity.com",     tag:"news",    desc:"Award-winning investigative journalism on cybercrime and security by former Washington Post reporter Brian Krebs." },
+  { n:19, title:"Schneier on Security", url:"schneier.com",            tag:"news",    desc:"Bruce Schneier's long-running blog on cryptography, security policy, privacy, and the broader implications of technology." },
+  { n:20, title:"Dark Reading",         url:"darkreading.com",         tag:"news",    desc:"Enterprise IT security news and analysis covering threats, vulnerabilities, risk management, and incident response." },
+  // CTF
+  { n:21, title:"PicoCTF",              url:"picoctf.org",             tag:"ctf",     desc:"Carnegie Mellon's free CTF platform designed for beginners and students with year-round practice challenges." },
+  { n:22, title:"CTFtime",              url:"ctftime.org",             tag:"ctf",     desc:"The definitive CTF event aggregator — find upcoming competitions, view write-ups, and track team rankings worldwide." },
+  { n:23, title:"OverTheWire",          url:"overthewire.org",         tag:"ctf",     desc:"Classic wargame site with progressive challenges covering Linux, web, crypto, and binary exploitation via SSH." },
+  { n:24, title:"Root-Me",              url:"root-me.org",             tag:"ctf",     desc:"French hacking practice platform with 400+ challenges across web, cryptography, network, forensics, and more." },
+  { n:25, title:"pwn.college",          url:"pwn.college",             tag:"ctf",     desc:"ASU's educational platform focused on binary exploitation fundamentals — shellcoding, ROP, heap exploitation." },
+  { n:26, title:"IppSec",               url:"ippsec.rocks",            tag:"ctf",     desc:"Searchable index of IppSec's acclaimed Hack The Box walkthrough videos — find solutions by technique or tool." },
+  { n:27, title:"Cryptopals",           url:"cryptopals.com",          tag:"crypto",  desc:"Matasano's legendary set of cryptography challenges teaching real-world attack techniques against live systems." },
+  { n:28, title:"WeChall",              url:"wechall.net",             tag:"ctf",     desc:"Aggregator tracking your progress across dozens of wargame and challenge sites with a unified scoring system." },
+  { n:29, title:"HackThis!!",           url:"hackthis.co.uk",          tag:"ctf",     desc:"Penetration testing site with challenges arranged by difficulty covering web exploits, steganography, and JavaScript." },
+  { n:30, title:"SmashTheStack",        url:"smashthestack.org",        tag:"ctf",     desc:"Classic buffer overflow and binary exploitation wargames across multiple IO levels for low-level hackers." },
+  // TOOLS
+  { n:31, title:"Shodan",               url:"shodan.io",               tag:"tools",   desc:"The search engine for Internet-connected devices — servers, webcams, ICS systems, and exposed services worldwide." },
+  { n:32, title:"Censys",               url:"censys.io",               tag:"tools",   desc:"Internet-wide scan data and attack surface management platform for discovering internet-exposed hosts and certificates." },
+  { n:33, title:"VirusTotal",           url:"virustotal.com",          tag:"tools",   desc:"Google-owned free service for analyzing suspicious files, URLs, and hashes against 70+ antivirus engines simultaneously." },
+  { n:34, title:"Hybrid Analysis",      url:"hybrid-analysis.com",     tag:"malware", desc:"Free malware analysis sandbox powered by CrowdStrike Falcon with behavioral analysis, YARA, and network traffic inspection." },
+  { n:35, title:"Any.run",              url:"any.run",                 tag:"malware", desc:"Interactive online malware sandbox allowing real-time process monitoring, network traffic capture, and threat hunting." },
+  { n:36, title:"MalwareBazaar",        url:"bazaar.abuse.ch",         tag:"malware", desc:"Abuse.ch's repository for sharing malware samples with the infosec community for analysis and signature development." },
+  { n:37, title:"Cuckoo Sandbox",       url:"cuckoosandbox.org",       tag:"malware", desc:"Leading open source automated malware analysis system for behavioral profiling of suspicious files in isolated VMs." },
+  { n:38, title:"Nmap",                 url:"nmap.org",                tag:"network", desc:"The essential open-source network scanner for host discovery, port scanning, service detection, and vulnerability assessment." },
+  { n:39, title:"Wireshark",            url:"wireshark.org",           tag:"network", desc:"World's foremost network protocol analyzer for live packet capture, deep inspection, and network traffic analysis." },
+  { n:40, title:"Kali Linux Tools",     url:"kali.org/tools",          tag:"tools",   desc:"Complete directory of all penetration testing tools included in Kali Linux with documentation and usage examples." },
+  // OSINT
+  { n:41, title:"OSINT Framework",      url:"osintframework.com",      tag:"osint",   desc:"Visual mind-map of OSINT resources organized by category — people, usernames, email, domains, geolocation, and more." },
+  { n:42, title:"Maltego",              url:"maltego.com",             tag:"osint",   desc:"Powerful link analysis and data mining tool for visualizing relationships between people, organizations, and infrastructure." },
+  { n:43, title:"Recon-ng",             url:"github.com/lanmaster53/recon-ng", tag:"osint", desc:"Full-featured web reconnaissance framework built on Python for open-source intelligence gathering tasks." },
+  { n:44, title:"Spiderfoot",           url:"spiderfoot.net",          tag:"osint",   desc:"Automated OSINT tool that queries 100+ data sources to footprint targets including IPs, domains, emails, and names." },
+  { n:45, title:"IntelTechniques",      url:"inteltechniques.com",     tag:"osint",   desc:"Michael Bazzell's OSINT resource site with tools, podcasts, and techniques used by investigators and privacy experts." },
+  { n:46, title:"Shodan",               url:"shodan.io",               tag:"osint",   desc:"(OSINT angle) Monitor your own exposure, research corporate attack surfaces, and discover misconfigured services." },
+  { n:47, title:"Dehashed",             url:"dehashed.com",            tag:"osint",   desc:"Search engine for leaked credentials and breach data — search by email, username, password, IP, or domain." },
+  { n:48, title:"Hunter.io",            url:"hunter.io",               tag:"osint",   desc:"Find and verify email addresses associated with any domain — essential for reconnaissance and red team engagements." },
+  { n:49, title:"Censys Search",        url:"search.censys.io",        tag:"osint",   desc:"Search over 5B hosts across the IPv4 space with certificate, service, and banner data for deep infrastructure OSINT." },
+  { n:50, title:"GrayHatWarfare",       url:"grayhatwarfare.com",      tag:"osint",   desc:"Search engine indexing exposed public cloud storage buckets (S3, Azure Blob, GCP) for sensitive data discoveries." },
+  // MALWARE / REVERSE ENGINEERING
+  { n:51, title:"Ghidra",               url:"ghidra-sre.org",          tag:"malware", desc:"NSA's open-source software reverse engineering framework with disassembler, decompiler, and scripting support." },
+  { n:52, title:"IDA Pro",              url:"hex-rays.com",            tag:"malware", desc:"Industry-standard interactive disassembler and debugger for binary analysis, malware reversing, and vulnerability research." },
+  { n:53, title:"x64dbg",               url:"x64dbg.com",              tag:"malware", desc:"Open-source x64/x32 debugger for Windows with a clean UI, scriptability, and active plugin community." },
+  { n:54, title:"OALabs",               url:"oalabs.openanalysis.net", tag:"malware", desc:"Malware analysis research blog with in-depth unpacking guides, config extractors, and reverse engineering tutorials." },
+  { n:55, title:"MalwareTech",          url:"malwaretech.com",         tag:"malware", desc:"Blog by the WannaCry sinkhole researcher covering malware analysis, botnet tracking, and cybercrime investigations." },
+  { n:56, title:"VirusShare",           url:"virusshare.com",          tag:"malware", desc:"Repository of malware samples shared among the security research community — over 40 million samples available." },
+  { n:57, title:"Flare-VM",             url:"github.com/mandiant/flare-vm", tag:"malware", desc:"Mandiant's Windows-based security distribution for malware analysis, reverse engineering, and incident response." },
+  { n:58, title:"REMnux",               url:"remnux.org",              tag:"malware", desc:"Linux distro purpose-built for reverse-engineering and analyzing malware with hundreds of pre-installed tools." },
+  { n:59, title:"Unpac.me",             url:"unpac.me",                tag:"malware", desc:"Automated malware unpacking service supporting dozens of common packers with YARA, config extraction, and reports." },
+  { n:60, title:"Joe Sandbox",          url:"joesandbox.com",          tag:"malware", desc:"Advanced threat intelligence and malware analysis sandbox with AI-assisted behavioral classification and reports." },
+  // NETWORK / INFRASTRUCTURE
+  { n:61, title:"SecurityFocus",        url:"securityfocus.com",       tag:"network", desc:"One of the oldest security portals with Bugtraq mailing list archives, vulnerability database, and security news." },
+  { n:62, title:"PacketStorm",          url:"packetstormsecurity.com",  tag:"network", desc:"Security community resource for tools, exploits, advisories, and whitepapers — running since 1998." },
+  { n:63, title:"MITRE ATT&CK",         url:"attack.mitre.org",        tag:"network", desc:"Globally accessible knowledge base of adversary tactics, techniques, and procedures based on real-world observations." },
+  { n:64, title:"CVE Details",          url:"cvedetails.com",          tag:"network", desc:"Browse CVE vulnerability data with filtering by vendor, product, CVSS score, and exploit availability." },
+  { n:65, title:"NVD — NIST",           url:"nvd.nist.gov",            tag:"network", desc:"The U.S. government's official CVE database with CVSS scores, CWE mappings, and remediation guidance." },
+  { n:66, title:"Rapid7 Vulnerability DB", url:"rapid7.com/db",        tag:"network", desc:"Searchable vulnerability and exploit database integrated with Metasploit modules for rapid exploitation research." },
+  { n:67, title:"Sploitus",             url:"sploitus.com",            tag:"tools",   desc:"Exploit and hacker tool search engine aggregating Exploit-DB, GitHub, PacketStorm, and Vulhub in one place." },
+  { n:68, title:"GTFOBins",             url:"gtfobins.github.io",      tag:"pentest", desc:"Curated list of Unix binaries that can be exploited to bypass local security restrictions — essential for privesc." },
+  { n:69, title:"LOLBAS",               url:"lolbas-project.github.io", tag:"pentest", desc:"Living Off the Land Binaries and Scripts — Windows-native executables that attackers abuse for post-exploitation." },
+  { n:70, title:"PayloadsAllTheThings", url:"github.com/swisskyrepo/PayloadsAllTheThings", tag:"pentest", desc:"Ultimate GitHub cheatsheet for web application security attacks — XSS, SQLi, SSRF, SSTI, and 50+ more." },
+  // CRYPTOGRAPHY
+  { n:71, title:"CyberChef",            url:"gchq.github.io/CyberChef", tag:"crypto",  desc:"GCHQ's 'Cyber Swiss Army Knife' — a web app for encoding, decoding, encrypting, hashing, and data analysis operations." },
+  { n:72, title:"CrackStation",         url:"crackstation.net",        tag:"crypto",  desc:"Free online password hash cracking service using massive precomputed lookup tables for MD5, SHA1, and more." },
+  { n:73, title:"HashKiller",           url:"hashkiller.io",           tag:"crypto",  desc:"Hash cracking community platform supporting MD5, SHA1, SHA256, NTLM with a large pre-cracked database." },
+  { n:74, title:"DCode.fr",             url:"dcode.fr/en",             tag:"crypto",  desc:"200+ cipher decoders and encoders for steganography and CTF crypto challenges — one of the best cipher toolkits." },
+  { n:75, title:"Quipqiup",             url:"quipqiup.com",            tag:"crypto",  desc:"Fast, automated cryptogram solver for substitution ciphers — widely used in CTF competitions." },
+  { n:76, title:"CryptoHack",           url:"cryptohack.org",          tag:"crypto",  desc:"Fun, gamified platform for learning modern cryptography through interactive coding challenges and puzzles." },
+  { n:77, title:"CrypTool",             url:"cryptool.org",            tag:"crypto",  desc:"Open-source e-learning platform visualizing cryptographic algorithms and attacks for educational purposes." },
+  { n:78, title:"HashCat",              url:"hashcat.net",             tag:"crypto",  desc:"World's fastest password recovery tool supporting 300+ hash types with GPU acceleration and rule-based attacks." },
+  { n:79, title:"John the Ripper",      url:"openwall.com/john",       tag:"crypto",  desc:"Classic open-source password security auditing and cracking tool supporting many ciphertext formats." },
+  { n:80, title:"Sage Math",            url:"sagemath.org",            tag:"crypto",  desc:"Open-source mathematics software system used extensively for breaking RSA and elliptic curve cryptography in CTFs." },
+  // PRIVACY / OPSEC
+  { n:81, title:"Tor Project",          url:"torproject.org",          tag:"privacy", desc:"The onion routing anonymity network and Tor Browser. Essential for anonymous communication and accessing .onion sites." },
+  { n:82, title:"Tails OS",             url:"tails.boum.org",          tag:"privacy", desc:"Amnesic live operating system routing all connections through Tor — designed for journalists, activists, and privacy-conscious users." },
+  { n:83, title:"Whonix",               url:"whonix.org",              tag:"privacy", desc:"Security-focused OS that runs inside a VM and routes all traffic through Tor, isolating the user from IP leaks." },
+  { n:84, title:"Privacy Guides",       url:"privacyguides.org",       tag:"privacy", desc:"Community-maintained guide to privacy-respecting tools, software, and services for digital self-defense." },
+  { n:85, title:"EFF — Electronic Frontier Foundation", url:"eff.org", tag:"privacy", desc:"The leading nonprofit defending digital civil liberties, privacy, free expression, and innovation in the digital world." },
+  { n:86, title:"Have I Been Pwned",    url:"haveibeenpwned.com",      tag:"privacy", desc:"Troy Hunt's free service to check whether your email or phone has appeared in publicly known data breaches." },
+  { n:87, title:"Proton Mail",          url:"proton.me",               tag:"privacy", desc:"End-to-end encrypted email service from Switzerland used by privacy advocates, journalists, and security professionals." },
+  { n:88, title:"DNSleaktest",          url:"dnsleaktest.com",         tag:"privacy", desc:"Check if your VPN or Tor setup is leaking DNS queries that could expose your true identity and location." },
+  { n:89, title:"IPLeak",               url:"ipleak.net",              tag:"privacy", desc:"Comprehensive tool to check for WebRTC leaks, DNS leaks, and IP address exposure when using a VPN or proxy." },
+  { n:90, title:"Surveillance Self-Defense", url:"ssd.eff.org",        tag:"privacy", desc:"EFF's practical guide to protecting yourself from digital surveillance with step-by-step operational security tips." },
+  // RESEARCH / REFERENCE
+  { n:91, title:"Google Project Zero",  url:"googleprojectzero.blogspot.com", tag:"news", desc:"Google's elite security research team publishes deep-dive vulnerability research, 0days, and exploit techniques." },
+  { n:92, title:"GreyNoise Intelligence", url:"greynoise.io",          tag:"network", desc:"Mass internet scanner tracking noise, botnets, and opportunistic scanning to filter real attacks from background noise." },
+  { n:93, title:"Threat Post",          url:"threatpost.com",          tag:"news",    desc:"Independent news site covering cybersecurity threats, vulnerabilities, and the latest research from the security community." },
+  { n:94, title:"OWASP",                url:"owasp.org",               tag:"learn",   desc:"Open Worldwide Application Security Project — standards, tools, and resources including the famous OWASP Top 10." },
+  { n:95, title:"Reverse Engineering Stack Exchange", url:"reverseengineering.stackexchange.com", tag:"learn", desc:"Q&A community for reverse engineering professionals covering disassembly, decompilation, and binary analysis." },
+  { n:96, title:"Security StackExchange", url:"security.stackexchange.com", tag:"learn", desc:"Information security Q&A community with expert answers on cryptography, web security, network security, and more." },
+  { n:97, title:"Red Team Notes",       url:"www.ired.team",           tag:"pentest", desc:"Comprehensive red team cheatsheets covering AD attacks, privilege escalation, lateral movement, and evasion techniques." },
+  { n:98, title:"Pentest Monkey",       url:"pentestmonkey.net",       tag:"pentest", desc:"Classic cheatsheets for reverse shells, SQL injection, and post-exploitation — a staple reference for decades." },
+  { n:99, title:"HacTricks",            url:"book.hacktricks.xyz",     tag:"pentest", desc:"Massive free gitbook by Carlos Polop covering every aspect of ethical hacking — web, network, cloud, AD, and more." },
+  { n:100,title:"0xdf Hacks Stuff",     url:"0xdf.gitlab.io",          tag:"ctf",     desc:"Prolific write-up blog by 0xdf covering Hack The Box machines with detailed, educational methodology explanations." },
+];
+
+const tagLabels = {
+  pentest:'Pentest', learn:'Learn', tools:'Tools', ctf:'CTF',
+  osint:'OSINT', malware:'Malware', news:'News', crypto:'Crypto',
+  network:'Network', privacy:'Privacy'
+};
+
+const grid = document.getElementById('grid');
+const noResults = document.getElementById('no-results');
+const searchEl = document.getElementById('search');
+const filterBtns = document.querySelectorAll('.filter-btn');
+
+let activeFilter = 'all';
+let searchTerm = '';
+
+function render() {
+  const cards = grid.querySelectorAll('.card');
+  cards.forEach(c => c.remove());
+
+  const filtered = sites.filter(s => {
+    const matchFilter = activeFilter === 'all' || s.tag === activeFilter;
+    const q = searchTerm.toLowerCase();
+    const matchSearch = !q || s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || s.url.toLowerCase().includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  noResults.style.display = filtered.length === 0 ? 'block' : 'none';
+  noResults.style.gridColumn = '1 / -1';
+
+  filtered.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = (i * 0.02) + 's';
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="card-num">${String(s.n).padStart(3,'0')}</span>
+        <div class="card-title-wrap">
+          <div class="card-title">${s.title}</div>
+          <a class="card-url" href="https://${s.url}" target="_blank" rel="noopener">${s.url}</a>
+        </div>
+        <span class="tag tag-${s.tag}">${tagLabels[s.tag]}</span>
+      </div>
+      <div class="card-desc">${s.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+searchEl.addEventListener('input', e => {
+  searchTerm = e.target.value;
+  render();
+});
+
+render();
+
+// Matrix rain
+(function() {
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, cols, drops;
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEF<>/\\[]{}!@#$%';
+
+  function init() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    cols = Math.floor(W / 16);
+    drops = Array(cols).fill(1);
+  }
+
+  function draw() {
+    ctx.fillStyle = 'rgba(3,10,3,0.04)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#00ff41';
+    ctx.font = '13px Share Tech Mono';
+    drops.forEach((y, i) => {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(ch, i * 16, y * 16);
+      if (y * 16 > H && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }
+
+  init();
+  window.addEventListener('resize', init);
+  setInterval(draw, 50);
+})();
+</script>
+</body>
+</html>
